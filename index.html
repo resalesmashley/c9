@@ -258,13 +258,13 @@
                                 <li>Face painting and hayrides</li>
                                 <li>Pumpkin decorating</li>
                             </ul>
-                            <a href="#" class="btn register-btn" data-event-name="Fall Festival">Register Now</a>
+                            <a href="#" class="btn register-btn" data-event-name="Fall Festival" data-event-date="November 10, 2025 | 3:00-6:00 PM" data-event-location="Church Parking Lot &amp; Gymnasium">Register Now</a>
                         </div>
                         <div class="event-item">
                             <div class="event-date">November 24, 2025 | 10:00 AM-12:00 PM</div>
                             <h3>Thanksgiving Service Project</h3>
                             <p>Children will assemble care packages for local families in need.</p>
-                            <a href="#" class="btn register-btn" data-event-name="Thanksgiving Service Project">Register Now</a>
+                            <a href="#" class="btn register-btn" data-event-name="Thanksgiving Service Project" data-event-date="November 24, 2025 | 10:00 AM-12:00 PM" data-event-location="Family Life Center">Register Now</a>
                         </div>
                     </div>
                 </div>
@@ -1541,6 +1541,70 @@
         </div>
     </main>
 
+    <div id="event-registration-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="event-modal-title" aria-hidden="true">
+        <div class="modal-content lesson-plan-modal">
+            <div class="modal-header">
+                <div>
+                    <p class="eyebrow">Children's Ministry Events</p>
+                    <h3 id="event-modal-title">Register for Event</h3>
+                    <p class="modal-subtitle" id="event-modal-date"></p>
+                </div>
+                <button type="button" class="btn-icon" id="event-modal-close" aria-label="Close event registration">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+            <form id="event-registration-form" class="account-modal-form">
+                <div class="modal-body">
+                    <div class="event-meta-grid">
+                        <div class="event-meta-card">
+                            <p class="eyebrow">Event</p>
+                            <p class="event-meta-value" id="event-modal-name">Fall Festival</p>
+                        </div>
+                        <div class="event-meta-card">
+                            <p class="eyebrow">Location</p>
+                            <p class="event-meta-value" id="event-modal-location">Church Campus</p>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="event-parent-name">Parent/Guardian Name</label>
+                            <input type="text" id="event-parent-name" name="parentName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="event-parent-email">Email</label>
+                            <input type="email" id="event-parent-email" name="parentEmail" required>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="event-parent-phone">Phone Number</label>
+                            <input type="tel" id="event-parent-phone" name="parentPhone" placeholder="555-123-4567" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="event-participants">Children Attending</label>
+                            <input type="text" id="event-participants" name="participants" placeholder="Add child names and ages" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="event-notes">Notes (allergies, accessibility, etc.)</label>
+                        <textarea id="event-notes" name="notes" rows="3" placeholder="Anything our team should know"></textarea>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <p class="form-feedback" id="event-registration-feedback" role="status"></p>
+                    <button type="button" class="btn-secondary" id="event-modal-cancel">Cancel</button>
+                    <button type="submit" class="btn">Submit registration</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="footer">
         <div class="bg-footer">
             <div class="bg-tone"></div>
@@ -1625,9 +1689,6 @@
             </div>
         </div>
     </div>
-
-</body>
-</html>
 
 </body>
 </html>
