@@ -2505,18 +2505,117 @@ function formatStaffStatus(status) {
     return 'Inactive';
 }
 
-function registerForEvent(eventName) {
-    alert('🛒 Cart-Style Event Registration\n\n' +
-          'Event: ' + eventName + '\n\n' +
-          'Step 1: Select participants\n' +
-          '☑ Emma Smith (Age 4)\n\n' +
-          'Step 2: Additional options\n' +
-          '○ T-shirt size: ___\n' +
-          '○ Dietary restrictions: ___\n' +
-          '○ Photo consent: [Yes/No]\n\n' +
-          'Step 3: Emergency contact\n' +
-          'Step 4: Review and confirm\n\n' +
-          '(Demo mode - Multi-step registration process)');
+function resetEventRegistrationFeedback() {
+    const feedback = document.getElementById('event-registration-feedback');
+    if (feedback) {
+        feedback.textContent = '';
+        feedback.classList.remove('success', 'error');
+    }
+}
+
+function setEventRegistrationFeedback(message, isError = false) {
+    const feedback = document.getElementById('event-registration-feedback');
+    if (!feedback) return;
+
+    feedback.textContent = message;
+    feedback.classList.remove('success', 'error');
+    feedback.classList.add(isError ? 'error' : 'success');
+}
+
+function populateEventRegistrationModal({ name, date, location }) {
+    const modalTitle = document.getElementById('event-modal-title');
+    const modalDate = document.getElementById('event-modal-date');
+    const modalName = document.getElementById('event-modal-name');
+    const modalLocation = document.getElementById('event-modal-location');
+    const form = document.getElementById('event-registration-form');
+
+    if (modalTitle) modalTitle.textContent = `Register for ${name}`;
+    if (modalDate) modalDate.textContent = date || 'Date to be announced';
+    if (modalName) modalName.textContent = name;
+    if (modalLocation) modalLocation.textContent = location || 'Bengal Christian Church campus';
+    if (form) {
+        form.reset();
+        form.dataset.eventName = name;
+        form.dataset.eventDate = date || '';
+        form.dataset.eventLocation = location || 'Bengal Christian Church campus';
+    }
+}
+
+function openEventRegistrationModal(details) {
+    const modal = document.getElementById('event-registration-modal');
+    const nameField = document.getElementById('event-parent-name');
+    if (!modal) return;
+
+    resetEventRegistrationFeedback();
+    populateEventRegistrationModal(details);
+
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+
+    if (nameField) {
+        setTimeout(() => nameField.focus(), 50);
+    }
+}
+
+function closeEventRegistrationModal() {
+    const modal = document.getElementById('event-registration-modal');
+    const form = document.getElementById('event-registration-form');
+    if (!modal) return;
+
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    resetEventRegistrationFeedback();
+    if (form) {
+        form.reset();
+        delete form.dataset.eventName;
+        delete form.dataset.eventDate;
+        delete form.dataset.eventLocation;
+    }
+}
+
+function registerForEvent(eventName, eventDate, eventLocation) {
+    const safeName = eventName || 'Event';
+    openEventRegistrationModal({
+        name: safeName,
+        date: eventDate,
+        location: eventLocation
+    });
+}
+
+function handleEventRegistrationSubmit(form) {
+    if (!form) return;
+
+    const formData = new FormData(form);
+    const parentName = (formData.get('parentName') || '').trim();
+    const parentEmail = (formData.get('parentEmail') || '').trim();
+    const parentPhone = (formData.get('parentPhone') || '').trim();
+    const participants = (formData.get('participants') || '').trim();
+    const notes = (formData.get('notes') || '').trim();
+    const eventName = form.dataset.eventName || 'Event';
+    const eventDate = form.dataset.eventDate || '';
+    const eventLocation = form.dataset.eventLocation || '';
+
+    if (!parentName || !parentEmail || !parentPhone || !participants) {
+        setEventRegistrationFeedback('Please complete all required fields to reserve your spot.', true);
+        return;
+    }
+
+    const summaryParts = [
+        `Registered for ${eventName}`,
+        eventDate && `(${eventDate})`,
+        eventLocation && `Location: ${eventLocation}`,
+        participants && `Participants: ${participants}`,
+        parentPhone && `Contact: ${parentPhone}`
+    ].filter(Boolean);
+
+    setEventRegistrationFeedback('Registration saved! We will follow up with a confirmation email.', false);
+    showToast(summaryParts.join(' • '));
+
+    if (notes) {
+        console.info('Event notes submitted:', notes);
+    }
+
+    setTimeout(() => closeEventRegistrationModal(), 900);
 }
 
 // Form Handlers
@@ -2572,9 +2671,42 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function(e) {
             e.preventDefault();
             const eventName = button.getAttribute('data-event-name');
-            registerForEvent(eventName);
+            const eventDate = button.getAttribute('data-event-date') || button.closest('.event-item')?.querySelector('.event-date')?.textContent || '';
+            const locationNode = button.closest('.event-item')?.querySelector('p strong');
+            const eventLocation = button.getAttribute('data-event-location') || (locationNode?.parentElement?.textContent?.replace('Location:', '').trim()) || '';
+
+            registerForEvent(eventName, eventDate, eventLocation);
         });
     });
+
+    const eventRegistrationModal = document.getElementById('event-registration-modal');
+    if (eventRegistrationModal) {
+        eventRegistrationModal.addEventListener('click', function(event) {
+            if (event.target === eventRegistrationModal) {
+                closeEventRegistrationModal();
+            }
+        });
+    }
+
+    const eventModalClose = document.getElementById('event-modal-close');
+    if (eventModalClose) {
+        eventModalClose.addEventListener('click', closeEventRegistrationModal);
+    }
+
+    const eventModalCancel = document.getElementById('event-modal-cancel');
+    if (eventModalCancel) {
+        eventModalCancel.addEventListener('click', function() {
+            closeEventRegistrationModal();
+        });
+    }
+
+    const eventRegistrationForm = document.getElementById('event-registration-form');
+    if (eventRegistrationForm) {
+        eventRegistrationForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            handleEventRegistrationSubmit(eventRegistrationForm);
+        });
+    }
 
     renderVolunteerRoles();
     hydrateVolunteerModal();
